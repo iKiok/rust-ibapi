@@ -104,6 +104,12 @@ pub struct ScannerData {
     pub contract_details: crate::contracts::ContractDetails,
     /// Describes the combo legs when the scanner is returning EFP.
     pub leg: String,
+    /// How far the instrument is from the scanner's sort criteria (scan-code dependent).
+    pub distance: String,
+    /// The benchmark value used by the scanner for this result.
+    pub benchmark: String,
+    /// The projected value used by the scanner for this result.
+    pub projection: String,
 }
 
 // Async API methods are now on Client directly via scanner/async.rs

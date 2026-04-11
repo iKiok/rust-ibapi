@@ -47,9 +47,9 @@ pub(in crate::scanner) fn decode_scanner_data(mut message: ResponseMessage) -> R
         scanner_data.contract_details.market_name = message.next_string()?;
         scanner_data.contract_details.contract.trading_class = message.next_string()?;
 
-        message.skip(); // distance
-        message.skip(); // benchmark
-        message.skip(); // projection
+        scanner_data.distance = message.next_string()?;
+        scanner_data.benchmark = message.next_string()?;
+        scanner_data.projection = message.next_string()?;
 
         scanner_data.leg = message.next_string()?;
 
