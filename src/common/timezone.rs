@@ -34,6 +34,9 @@ fn map_timezone_name(name: &str) -> &str {
             return iana;
         }
     }
+    if name == "Eastern European Standard Time" || name == "Eastern European Time" || name == "EET" {
+        return "Europe/Athens";
+    }
 
     // GB2312/GBK encoded strings decoded as UTF-8 lossy contain U+FFFD.
     // In IB Gateway context, this indicates a Chinese installation.
