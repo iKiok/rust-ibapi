@@ -1,0 +1,56 @@
+name: ik-local CI
+
+# Minimal CI for the ik-local patch branch. Upstream's ci.yml only triggers
+# on pushes to main, so pushes to our patch branch otherwise go untested.
+# This workflow runs on every push to ik-local and verifies that our local
+# patches haven't broken the async feature (which is what the dashboard uses).
+#
+# Separate file from upstream's ci.yml so future rebases onto upstream/main
+# don't conflict with our addition.
+#
+# Triggered only on ik-local to avoid double-running when upstream's own CI
+# runs on main. Duplicating main-branch coverage would waste Actions minutes.
+
+on:
+  push:
+    branches:
+      - ik-local
+  pull_request:
+    branches:
+      - ik-local
+
+env:
+  CARGO_TERM_COLOR: always
+  RUST_BACKTRACE: 1
+  CARGO_INCREMENTAL: 0
+  CARGO_NET_RETRY: 10
+
+jobs:
+  test:
+    name: ik-local patches
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Install Rust toolchain
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          components: clippy
+
+      - name: Rust cache
+        uses: Swatinem/rust-cache@v2
+        with:
+          key: ik-local
+
+      # The dashboard uses the default async feature set, so that's what we
+      # verify. If a patch breaks sync-only, upstream's own ci.yml will catch
+      # it on the next rebase cycle - we don't duplicate that coverage here.
+      - name: cargo check (async)
+        run: cargo check --lib
+
+      - name: cargo test --lib (async)
+        run: cargo test --lib
+
+      - name: cargo clippy --lib -- -D warnings
+        run: cargo clippy --lib -- -D warnings
